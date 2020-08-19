@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Update your post</h1>
+<div id="postContainer"></div>
+
+<script type="text/javascript">
+  const postContainer = document.getElementById('postContainer')
+
+  function returnPost(postContainer) {
+
+    const xhttp = new XMLHttpRequest()
+    xhttp.responseType = 'json'
+    xhttp.open('GET', 'http://127.0.0.1:8000/api/posts/post-details/{{post.id}}', true)
+
+    xhttp.onload = function() {
+      const post = xhttp.response
+      const comments = xhttp.response.comments
+      postContainer.innerHTML = `
+      <form onsubmit="handleFormSubmit(event, ${ post.id })" method="post">
+        {% csrf_token %}
+
+        <div>
+          <label for="">title</label>
+          <input type="text" name="title" value="${ post.title }">
+        </div>
+        <div>
+          <label for="">content</label>
+          <input type="text" name="content" value="${ post.content }">
+        </div>
+        <input type="submit" value="submit">
+      </form>
+      `
+    }
+
+    xhttp.onerror = function() {
+      console.log('error')
+    }
+    xhttp.send()
+
+
+
+  }
+
+  returnPost(postContainer)
+
+  function handleFormSubmit(event, id) {
+    event.preventDefault()
+    var $crf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
+
+
+    const xhttp = new XMLHttpRequest()
+    xhttp.open('PUT', `/api/posts/post-update/${ id }`, true)
+    xhttp.setRequestHeader("X-CSRFToken", $crf_token)
+
+    xhttp.onload = function() {
+      const postObj = JSON.parse(xhttp.response)
+      if(postObj.detail) {
+        alert('You dont have permission for editting this post')
+      } else {
+        location.reload()
+      }
+    }
+    xhttp.send(new FormData(event.target))
+
+    //location.reload()
+  }
+</script>
+{% endblock content %}

@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div id="postContainer"></div>
+<div id="commentsContainer"></div>
+
+<script type="text/javascript">
+  const commentsContainer = document.getElementById('commentsContainer')
+  const commentsApi = '/api/posts/post-details/{{post.id}}'
+
+  const postContainer = document.getElementById('postContainer')
+
+  function returnPost(commentsContainer, postContainer) {
+    const xhttp = new XMLHttpRequest()
+    xhttp.responseType = 'json'
+    xhttp.open('GET', '/api/posts/post-details/{{post.id}}')
+    xhttp.onload = function() {
+      const post = xhttp.response
+      const comments = xhttp.response.comments
+
+      postContainer.innerHTML = `
+      <h1>${ post.title }</h1>
+      ${post.image ? '<img class="postImage" src="' + post.image + '" alt="">' : ''}
+      <p>${ post.content }</p>
+      <p>By: ${ post.user }</p>
+      <p>created at: ${ post.created }</p>
+      <div>
+        <h3>Add comment</h3>
+        <form onsubmit="handleFormSubmit(event)" method="post">
+          {% csrf_token %}
+          <input type="textarea" name="content" value="">
+          <input type="hidden" name="post_id" value="${ post.id }">
+          <input type="submit" value="comment">
+        </form>
+      </div>
+      `
+
+
+
+      comments.map(comment => {
+        const commentTemplate = document.createElement('div')
+        commentTemplate.innerHTML = `
+        <div class="comment">
+          <p>${ comment.content }</p>
+          <p>from: ${ comment.user }</p>
+          <p>date: ${ comment.created }</p>
+          <form onsubmit="handleDelete(event, ${ comment.id })" method="post">
+            {% csrf_token %}
+            <input type="submit" name="" value="delete">
+          </form>
+        </div>
+        `
+        commentsContainer.appendChild(commentTemplate)
+      })
+    }
+    xhttp.send()
+  }
+  returnPost(commentsContainer, postContainer)
+
+  function handleFormSubmit(event) {
+    event.preventDefault()
+
+    const content = event.target.content.value
+    if(!content) {
+      alert('add content')
+    } else {
+      const xhttp = new XMLHttpRequest()
+      xhttp.open('POST', '/api/comments/comment-create/', true)
+      xhttp.send(new FormData(event.target))
+      xhttp.onload = function () {
+        console.log(xhttp.response)
+      }
+
+      location.reload()
+      //location.replace('http://127.0.0.1:8000/posts/post-list/')
+    }
+  }
+
+  function handleDelete(event, id) {
+    const $crf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
+
+    const xhttp = new XMLHttpRequest()
+    xhttp.open('DELETE', `/api/comments/comment-delete/${ id }`, true)
+    xhttp.setRequestHeader("X-CSRFToken", $crf_token)
+
+    xhttp.send()
+  }
+
+</script>
+{% endblock content %}

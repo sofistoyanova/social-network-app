@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <h1>{{ title }}</h1>
+    {% for message in messages %}
+      <p style="color:green; font-size: 22px;">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+    {% for post in post_list %}
+    <a href="{% url 'posts_app:post-details' id=post.id %}"><p>{{ post.title }}</p></a>
+    {% endfor %}
+  </body>
+</html>

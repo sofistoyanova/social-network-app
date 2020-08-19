@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<h1>{{ title }}</h1>
+<form method="post">
+  {% csrf_token %}
+  {{ form|crispy }}
+  <input type="submit" value="POST">
+</form>
+{% if title == 'Signin' %}
+  <a href="{% url 'password_reset' %}">Forgot Password?</a>
+{% endif %}
+{% endblock content %}

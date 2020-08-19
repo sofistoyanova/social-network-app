@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <link rel="stylesheet" href="{% static 'styles/style.css' %}">
+</head>
+<body>
+  <div class="container">
+    {% if request.user.is_authenticated  %}
+      <nav>
+        <a href="{% url 'posts_app:post-create' %}"><li>create post</li></a>
+        <a href="{% url 'posts_app:post-list' %}"><li>post list</li></a>
+        <a href="{% url 'users_app:change-password' %}"><li>settings</li></a>
+        <a href="{% url 'users_app:signout' %}"><li>signout</li></a>
+      </nav>
+    {% else %}
+      <nav>
+        <a href="{% url 'users_app:signup' %}"><li>signup</li></a>
+        <a href="{% url 'users_app:signin' %}"><li>signin</li></a>
+      </nav>
+    {% endif %}
+
+
+
+    {% if messages %}
+      {% for message in messages %}
+        <p style="color:{% if message.tags == 'error'%} red {% else %} green {% endif %}; font-size: 22px;">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+
+    {% block content %}
+
+    {% endblock content %}
+  </div>
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"integrity="sha256-
+  ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+  </body>
+</html>

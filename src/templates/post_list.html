@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ title }}</h1>
+
+<div id="postsContainer"></div>
+
+  <script type="text/javascript">
+    const postsContainer = document.getElementById('postsContainer')
+    const loggedUser = '{{ request.user }}'
+    function returnPosts(container) {
+      const xhttp = new XMLHttpRequest()
+      xhttp.responseType = 'json'
+      xhttp.open('GET', '/api/posts/post-list/')
+      xhttp.onload = function() {
+        const posts = xhttp.response
+
+        posts.map(post => {
+          const updateLink = `http://127.0.0.1:8000/posts/post-update/${post.id}`
+          const postTemplate = document.createElement('div')
+          postTemplate.innerHTML = `
+            <div>
+              <h2>${post.title}</h2>
+              ${post.image ? '<img class="postImage" src="' + post.image + '" alt="">' : ''}
+              <p>${post.content}</p>
+              <a href="#">Author: ${post.user}</a>
+              <a href="/posts/post-details/${post.id}">view</a>
+              ${loggedUser == post.user
+                ? '<form onsubmit="handleDelete(event,' + post.id + ')">{% csrf_token %} <input type="submit" name="" value="delete"></form> <a href="' + updateLink + '">update</a>'
+                : ''}
+
+            </div>
+            `
+            container.appendChild(postTemplate)
+        })
+      }
+      xhttp.send()
+    }
+    returnPosts(postsContainer)
+
+    function handleDelete(event, id) {
+      var $crf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
+
+      const xhttp = new XMLHttpRequest()
+      xhttp.open('DELETE', `/api/posts/post-delete/${ id }`, true)
+      xhttp.setRequestHeader("X-CSRFToken", $crf_token)
+      xhttp.onload = function() {
+        const postObj = JSON.parse(xhttp.response)
+        if(postObj.detail) {
+          alert('You dont have permission for deleting this post')
+        }
+      }
+      xhttp.send()
+    }
+
+  </script>
+{% endblock content %}

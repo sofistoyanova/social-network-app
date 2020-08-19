@@ -1,0 +1,21 @@
+h1 {
+  color: blue;
+}
+
+* {
+  background: burlywood;
+}
+
+.comment {
+  border: 1px solid black;
+  margin-bottom: 50px
+}
+
+.postImage {
+  max-width: 200px;
+}
+
+img {
+  width: 200px;
+  height: auto;
+}

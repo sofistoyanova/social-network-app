@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<h2>Create post</h2>
+<form method="post" onsubmit="handleFormSubmit(event)" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div>
+    <label for="title">Post title</label>
+    <input type="text" name="title" value="">
+  </div>
+
+  <div>
+    <label for="content">Post content</label>
+    <input type="text" name="content" value="">
+  </div>
+
+  <div>
+    <label for="content">Post image</label>
+    <input type="file" name="image" value="">
+  </div>
+  <input type="submit" value="POST">
+</form>
+
+<script type="text/javascript">
+  function handleFormSubmit(event) {
+    event.preventDefault()
+
+    const title = event.target.title.value
+    const content = event.target.content.value
+    if(!title) {
+      alert('add title')
+    }else if(!content) {
+      alert('add post content')
+    } else {
+      const xhttp = new XMLHttpRequest()
+      xhttp.open('POST', '/api/posts/post-create/', true)
+      xhttp.send(new FormData(event.target))
+
+      location.replace('http://127.0.0.1:8000/posts/post-list/')
+    }
+  }
+</script>
+{% endblock content %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Profile settings</h2>
+<h4>Change your password</h4>
+<p>{{ message }}</p>
+  <form action="{% url 'users_app:change-password' %}" method="POST">
+      {% csrf_token %}
+      <input required type="password" name="old_password" placeholder="old password">
+      <input required type="password" name="new_password1" placeholder="new password">
+      <input required type="password" name="new_password2" placeholder="confirm new password">
+      <button>submit</button>
+  </form>
+{% endblock content %}
